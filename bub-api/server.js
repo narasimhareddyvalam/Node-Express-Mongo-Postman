@@ -10,7 +10,6 @@ connectDB();
 app.use(express.json());
 app.use('/user', userRoutes);
 
-// Serve images folder statically
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 const PORT = process.env.PORT || 5000;

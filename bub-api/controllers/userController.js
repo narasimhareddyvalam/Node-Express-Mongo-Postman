@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Joi = require('joi');
 
-// Validation schema for user data
+
 const validateUser = (data) => {
     const schema = Joi.object({
         fullName: Joi.string().min(3).required(),
@@ -12,7 +12,7 @@ const validateUser = (data) => {
     return schema.validate(data);
 };
 
-// Create a new user
+
 exports.createUser = async (req, res) => {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
@@ -29,7 +29,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// Update user details
+
 exports.updateUser = async (req, res) => {
     const { fullName, password } = req.body;
     const { email } = req.query;
@@ -48,7 +48,7 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-// Delete user
+
 exports.deleteUser = async (req, res) => {
     const { email } = req.query;
 
@@ -60,7 +60,7 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Retrieve all users
+
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find({}, 'fullName email');
@@ -70,7 +70,7 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Upload image
+
 exports.uploadImage = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
