@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Joi = require('joi');
 
-
+// Validation function using Joi for user input
 const validateUser = (data) => {
     const schema = Joi.object({
         fullName: Joi.string().min(3).required(),
@@ -12,7 +12,7 @@ const validateUser = (data) => {
     return schema.validate(data);
 };
 
-
+// Create a new user
 exports.createUser = async (req, res) => {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
@@ -25,11 +25,15 @@ exports.createUser = async (req, res) => {
         await user.save();
         res.status(201).json({ message: 'User created successfully' });
     } catch (err) {
+        // Handle duplicate email error
+        if (err.code === 11000) {
+            return res.status(400).json({ message: 'This email is already registered.' });
+        }
         res.status(500).json({ message: 'Error creating user', error: err.message });
     }
 };
 
-
+// Update user details
 exports.updateUser = async (req, res) => {
     const { fullName, password } = req.body;
     const { email } = req.query;
@@ -48,11 +52,16 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-
+// Delete a user
 exports.deleteUser = async (req, res) => {
     const { email } = req.query;
 
     try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         await User.deleteOne({ email });
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (err) {
@@ -60,7 +69,7 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-
+// Get all users (full details)
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find({}, 'fullName email');
@@ -70,7 +79,7 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-
+// Upload image for user
 exports.uploadImage = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
